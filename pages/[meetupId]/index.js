@@ -1,31 +1,44 @@
+import Head from 'next/head';
+
+import { MongoClient, ObjectId } from 'mongodb';
+
 import MeetupDetail from '../../components/meetups/MeetupDetail';
 
-function MeetupDetails() {
+function MeetupDetails({ meetupData }) {
 	return (
-		<MeetupDetail
-			title="A first meetup"
-			image="https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Gauguin%2C_Paul_-_Landscape_near_Arles_-_Google_Art_Project.jpg/1280px-Gauguin%2C_Paul_-_Landscape_near_Arles_-_Google_Art_Project.jpg"
-			address="Some adress"
-			description="The meetup description"
-		/>
+		<>
+			<Head>
+				<title>{meetupData.title}</title>
+				<meta title="description" content={meetupData.description} />
+			</Head>
+			<MeetupDetail
+				title={meetupData.title}
+				image={meetupData.image}
+				address={meetupData.address}
+				description={meetupData.description}
+			/>
+		</>
 	);
 }
 
 export async function getStaticPaths() {
+	const client = await MongoClient.connect(
+		'mongodb+srv://admin:X4xnMbGvKALnWbQx@cluster0.8udcc.mongodb.net/meetups?retryWrites=true&w=majority'
+	);
+	const db = client.db();
+	const meetupsCollection = db.collection('meetups');
+
+	const meetups = await meetupsCollection.find({}, { _id: 1 }).toArray();
+
+	client.close();
+
 	return {
 		fallback: true,
-		paths: [
-			{
-				params: {
-					meetupId: 'm1'
-				}
-			},
-			{
-				params: {
-					meetupId: 'm2'
-				}
+		paths: meetups.map((meetup) => ({
+			params: {
+				meetupId: meetup._id.toString()
 			}
-		]
+		}))
 	};
 }
 
@@ -34,16 +47,21 @@ export async function getStaticProps(context) {
 
 	const id = context.params.meetupId;
 
-	console.log(id);
+	const client = await MongoClient.connect(
+		'mongodb+srv://admin:X4xnMbGvKALnWbQx@cluster0.8udcc.mongodb.net/meetups?retryWrites=true&w=majority'
+	);
+	const db = client.db();
+	const meetupsCollection = db.collection('meetups');
+
+	const { _id, ...meetup } = await meetupsCollection.findOne({
+		_id: ObjectId(id)
+	});
+
+	client.close();
 
 	return {
 		props: {
-			meetupdata: {
-				id,
-				image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Gauguin%2C_Paul_-_Landscape_near_Arles_-_Google_Art_Project.jpg/1280px-Gauguin%2C_Paul_-_Landscape_near_Arles_-_Google_Art_Project.jpg',
-				address: 'Some address',
-				description: 'Some meetup description'
-			}
+			meetupData: { ...meetup, id: _id.toString() }
 		}
 	};
 }
