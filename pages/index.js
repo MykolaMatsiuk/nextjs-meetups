@@ -2,7 +2,7 @@ import Head from 'next/head';
 import { MongoClient } from 'mongodb';
 
 import MeetupList from '../components/meetups/MeetupList';
-import { mongoUrl } from '../env/mongoUrl';
+import { mongoUrl } from '../vars/mongoUrl';
 
 function HomePage(props) {
 	return (

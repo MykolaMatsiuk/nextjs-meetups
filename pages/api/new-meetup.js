@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb';
 
-import { mongoUrl } from '../../env/mongoUrl';
+import { mongoUrl } from '../../vars/mongoUrl';
 // /api/new-meetup
 
 async function handler(req, res) {
