@@ -12,8 +12,6 @@
 /.next/
 /out/
 
-/vars
-
 # production
 /build
 
