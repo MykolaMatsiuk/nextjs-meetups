@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { MongoClient, ObjectId } from 'mongodb';
 
 import MeetupDetail from '../../components/meetups/MeetupDetail';
+import { mongoUrl } from '../../env/mongoUrl';
 
 function MeetupDetails({ meetupData }) {
 	return (
@@ -22,9 +23,7 @@ function MeetupDetails({ meetupData }) {
 }
 
 export async function getStaticPaths() {
-	const client = await MongoClient.connect(
-		'mongodb+srv://admin:X4xnMbGvKALnWbQx@cluster0.8udcc.mongodb.net/meetups?retryWrites=true&w=majority'
-	);
+	const client = await MongoClient.connect(mongoUrl);
 	const db = client.db();
 	const meetupsCollection = db.collection('meetups');
 
@@ -47,9 +46,7 @@ export async function getStaticProps(context) {
 
 	const id = context.params.meetupId;
 
-	const client = await MongoClient.connect(
-		'mongodb+srv://admin:X4xnMbGvKALnWbQx@cluster0.8udcc.mongodb.net/meetups?retryWrites=true&w=majority'
-	);
+	const client = await MongoClient.connect(mongoUrl);
 	const db = client.db();
 	const meetupsCollection = db.collection('meetups');
 
